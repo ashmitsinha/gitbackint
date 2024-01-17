@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #4e4f4f;
+      color: #ffffff;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      
+    }
+
+    .profile-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      background-color: #23888a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .profile-content {
+      padding: 20px;
+      padding-left: 140px; /* Adjusted for the profile picture */
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    p {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>User Profile</h1>
+  </header>
+
+  <div class="profile-container">
+    <div class="profile-picture" id="profilePicture">J</div>
+    <div class="profile-content">
+      <h2>John Doe</h2>
+      <p>Email: john.doe@example.com</p>
+      <p>Location: City, Country</p>
+      <p>About Me: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur leo nec dui convallis, eu lacinia lectus convallis.</p>
+      <a href="{% url 'ui:history' %}"><button>history</button></a>
+    </div>
+  </div>
+
+  <script>
+    // Generate and set the initial letter dynamically
+    const email = "john.doe@example.com";
+    const initialLetter = email.charAt(0).toUpperCase();
+    document.getElementById('profilePicture').innerText = initialLetter;
+  </script>
+
+</body>
+</html>

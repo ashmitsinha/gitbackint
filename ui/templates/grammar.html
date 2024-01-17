@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <!-- Add Font Awesome link (make sure to include this in your project) -->
+    <link rel="stylesheet" href="{% static 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'grammar.css' %}">
+</head>
+<body>
+    <div id="leftPane" class="sidebar" onclick="toggleLeftPane()">
+        
+        <header><h3>SummarEase</h3></header>
+        <ul>
+            <li ><a href="{% url 'ui:summarease' %}"><i class="fas fa-file-alt icon"style="color: rgb(0, 138, 119);"></i> Text Summarizer</a></li>
+
+            <li><a href="{% url 'ui:pdf1' %}"><i class="fas fa-file-pdf icon"style="color: blue;"></i> PdfSummarizer</a></li>
+    
+            <li><a href="{% url 'ui:grammar' %}"><i class="fas fa-code icon"style="color:green"></i> GrammarChecker</a></li>
+            <li><a href="{% url 'ui:profile' %}" ><i class="fas fa-user icon"></i> Profile</a></li>
+    
+            <li></i><a href="{% url 'ui:home' %}" ><i class="fas fa-sign-out-alt icon" style="color:red"></i> Logout</a></li>
+        </ul>
+    </div>    
+    
+    <div id="mainContent" style="background-image: linear-gradient(to right, rgba(21, 187, 173, 0.638), rgba(21, 187, 173, 0.638));">
+        <h2 style="text-align: center; color:rgb(255, 255, 255);">GrammarChecker and corrector</h2>
+            <div class="main" style="margin-top:-1% ;">
+        <div class="left" style="background-image: linear-gradient(to right, rgba(21, 187, 173, 0.638),rgba(21, 187, 173, 0.638) );">
+            <form action="{% url 'ui:grammar_checker' %}" method="post" >
+            {% csrf_token %}
+            <textarea ondragstart="return false;" name="text_to_check" id="inputText" type="text" placeholder="Enter sentences to check and correct" rows="4" cols="30" required style="padding:10px;">{{ input }}</textarea>
+            
+            <button id="button" > Correct </button>
+        </form>
+        </div>
+        <!-- <hr style="height: 90%; border: 0; border-left: 1px solid #ed0909; margin: 0 10px;"> -->
+        <div class="right">
+            
+            {% if result %}
+            <p id="output">{{ result }}</p>
+            {% endif %}
+        </div>
+        
+        
+        </div>
+    </div>
+        
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+    <script>
+        // Your JavaScript code for microphone, translation, and profile buttons
+        document.getElementById('microphoneButton').addEventListener('click', function () {
+            // Add your microphone functionality here
+            alert('Microphone button clicked!');
+        });
+
+        document.getElementById('translateButton').addEventListener('click', function () {
+            // Add your translation functionality here
+            alert('Translate button clicked!');
+        });
+
+        document.getElementById('profileButton').addEventListener('click', function () {
+            // Add your profile functionality here
+            alert('Profile button clicked!');
+        });
+
+        function resizeTextbox(){
+            const textarea = document.getElementById('userInput');
+            text.style.height = 'auto';
+            text.style.height=(textarea.scrollHeight + 2)+'px';
+
+        }
+        function toggleDropdown() {
+            var dropdown = document.getElementById("profileDropdown");
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        }
+    
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('#profileButton button')) {
+                var dropdown = document.getElementById("profileDropdown");
+                if (dropdown.style.display === "block") {
+                    dropdown.style.display = "none";
+                }
+            }
+        }
+    
+            function toggleLeftPane() {
+              const leftPane = document.getElementById('leftPane');
+              leftPane.classList.toggle('hidden');
+            }
+            
+              
+          
+              function deleteOutput() {
+                var outputDiv = document.getElementById('output');
+                outputDiv.innerText = '';
+          
+                // Hide the delete button after deleting the content
+                var deleteButton = document.getElementById('deletebutton');
+                deleteButton.style.display = 'none';
+              }
+    </script>
+</body>
+</html>

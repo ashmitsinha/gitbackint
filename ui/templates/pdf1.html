@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <!-- Add Font Awesome link (make sure to include this in your project) -->
+    <link rel="stylesheet" href="{% static 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'pdf1.css' %}">
+    <style>
+        .sidebar header{
+            text-align: center;
+            background-color: #f2f2f2;
+            padding: 10px;
+            height: 10vh;
+            color: #0a4b50;
+            box-shadow: 0px 1px 10px rgba(41, 39, 39, 0.629);
+        
+        }
+        .sidebar ul a{
+            /* text-align: center; */
+            /* display: block; */
+            display: block;
+            height: 100%;
+            width: 100%;
+            line-height: 85px;
+            font-size: 16px;
+            color: rgb(2, 60, 68);
+            box-sizing: border-box;
+            transition: .6s;
+            padding: 1%;
+            /* padding: 6%; */
+            
+            /* border-top: 1px solid #064a698c;
+            border-bottom: 1px solid rgba(8, 63, 87, 0.612); */
+        }
+
+        .sidebar ul li {
+            /* display: none; */
+            padding-left: 50px;
+            box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.262);
+            margin-left: -22%;
+        }
+        .sidebar li a{
+            width: 120%;
+            margin-left: -38px;
+        }
+        ul li:hover a{
+            padding-left:9px ;
+        }
+    </style>
+</head>
+<body >
+    <div id="leftPane" class="sidebar" onclick="toggleLeftPane()" style="background-color: rgb(255, 255, 255);">
+        
+        <header><h3>SummarEase</h3></header>
+        <ul>
+            <li ><a href="{% url 'summarease' %}"><i class="fas fa-file-alt icon"style="color: rgb(0, 138, 119);"></i> Text Summarizer</a></li>
+    
+            <li><a href="{% url 'pdf1' %}"><i class="fas fa-file-pdf icon"style="color: blue;"></i> PdfSummarizer</a></li>
+    
+            <li><a href="{% url 'grammar' %}"><i class="fas fa-code icon"style="color:green"></i> GrammarChecker</a></li>
+            <li><a href="{% url 'profile' %}" ><i class="fas fa-user icon"></i> Profile</a></li>
+    
+            <li></i><a href="{% url 'home' %}" ><i class="fas fa-sign-out-alt icon" style="color:red"></i> Logout</a></li>
+        </ul>
+    </div>    
+    
+    <div id="mainContent">
+        <div class="top">
+            <div class="linesContainer">
+               
+                <div id="control-panel">
+                    <!-- Label for minimum value -->
+                <!-- <p>id="minLabel"><b>PDF Summarizer</b></p> -->
+                    <h3 style="color: rgb(8, 113, 113); font-size:22px; margin-left:40%"> <b>Pdf Summarizer</b></h3>
+
+                    <div id="but" >
+                        
+                        <!-- <a href='{% url "texttospeech" %}'><i class="fas fa-microphone larger-icon" id="microphonebutton"></i></a>
+                        <a href="{% url 'translate_summary' %}"><i class="fas fa-language larger-icon" id="translatebutton"></i></a> -->
+                        
+                        <button id="deletebutton" title="Delete" onclick="deleteOutput()" ><i class="fas fa-trash-alt larger-icon"></i></button>
+                        </div>
+                </div>
+                
+            </div>
+            </div>
+
+            <div class="main">
+            <div class="left">
+                
+            <form id="pdfForm" action="{% url 'pdf_summary_view' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div id="upload-container">
+                    <label id="custom-upload" for="file-input">
+                        <i class="fas fa-cloud-upload-alt fa-2x" style="margin-left:-10px"></i>
+                    </label>
+                    <!-- Actual file input (hidden) -->
+                    <p style="color: darkcyan; padding-right:65%">Upload PDF</p>
+                    <input type="file" id="file-input" name="file-input" accept=".pdf" onchange="displayFileName()" />
+                    <p id="pdf-name" style="color: rgb(6, 84, 84); margin-left:-60%; display: none; "><b>{{ input }}</b></p>
+                </div>
+            
+                <button id="extract-button" type="submit" onclick="submitForm()">Extract Content</button>
+            </form>
+            </div>
+
+        <!-- <hr style="height: 90%; border: 0; border-left: 1px solid #ed0909; margin: 0 10px;"> -->
+        <div class="right" id="rightpane">
+            {% if result %}
+            
+            <h3>Summary:</h3>
+             <p id="output">{{ result }}</p>
+
+             {% endif %}
+        </div>
+        
+        
+        </div>
+    </div>
+        
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+    <script>
+        function submitForm() {
+            var form = document.getElementById('pdfForm');
+            var formData = new FormData(form);
+    
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                } else {
+                    // Update the content dynamically in the right pane
+                    var rightPane = document.getElementById('rightPane');
+                    rightPane.innerHTML = data.html_content;
+    
+                    // Show the delete button when there's content in the output
+                    var deleteButton = document.getElementById('deletebutton');
+                    deleteButton.style.display = rightPane.innerText.trim() !== '' ? 'inline-block' : 'none';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+            function displayFileName() {
+                var input = document.getElementById('file-input');
+                var fileName = input.files[0].name;
+                var pdfNameElement = document.getElementById('pdf-name');
+                
+                // Display PDF name
+                pdfNameElement.innerHTML = 'Selected PDF: ' + fileName;
+                
+            }
+
+        function resizeTextbox(){
+            const textarea = document.getElementById('userInput');
+            text.style.height = 'auto';
+            text.style.height=(textarea.scrollHeight + 2)+'px';
+
+        }
+        
+              function processText() {
+                var inputText = document.getElementById('inputText').value;
+                var processedText = '' + inputText.toUpperCase();
+                var outputDiv = document.getElementById('output');
+                outputDiv.innerText = processedText;
+          
+                // Show the delete button when there's content in the output
+                var deleteButton = document.getElementById('deletebutton');
+                deleteButton.style.display = outputDiv.innerText.trim() !== '' ? 'inline-block' : 'none';
+              }
+          
+              function deleteOutput() {
+                var outputDiv = document.getElementById('output');
+                outputDiv.innerText = '';
+          
+                // Hide the delete button after deleting the content
+                var deleteButton = document.getElementById('deletebutton');
+                deleteButton.style.display = 'none';
+              }
+            
+              <!-- Add this script to your HTML file -->
+             
+                  
+              
+                  // Function to display PDF name
+                  function displayFileName() {
+                      var input = document.getElementById('file-input');
+                      var fileName = input.files[0].name;
+                      var pdfNameElement = document.getElementById('pdf-name');
+              
+                      // Display PDF name
+                      pdfNameElement.innerHTML = 'Selected PDF: ' + fileName;
+                      pdfNameElement.style.display = 'block';
+                  }
+             
+              
+    </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <!-- Add Font Awesome link (make sure to include this in your project) -->
+    <link rel="stylesheet"
+        href="{% static 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'summarease.css' %}">
+</head>
+
+<body>
+    <div id="leftPane" class="sidebar" onclick="toggleLeftPane()">
+
+        <header>
+            <h3>SummarEase</h3>
+        </header>
+        <ul>
+            <li><a href="{% url 'summarease' %}"><i class="fas fa-file-alt icon" style="color: rgb(0, 138, 119);"></i>
+                    Text Summarizer</a></li>
+
+            <li><a href="{% url 'pdf1' %}"><i class="fas fa-file-pdf icon" style="color: blue;"></i> PdfSummarizer</a>
+            </li>
+
+            <li><a href="{% url 'grammar' %}"><i class="fas fa-code icon" style="color:green"></i> GrammarChecker</a>
+            </li>
+            <li><a href="{% url 'history' %}"><i class="fas fa-user icon"></i> History</a></li>
+
+            <li></i><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt icon" style="color:red"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    </div>
+    <!-- <div id="mainButton" onclick="toggleLeftPane()">Main Button</div> -->
+
+    <div id="mainContent"
+        style="background-image: linear-gradient(to right, rgba(21, 187, 173, 0.638), rgba(21, 187, 173, 0.638));">
+
+        <div class="top">
+            <div class="linesContainer">
+                <div>
+
+                    <div id="control-panel">
+                        <!-- Clickable icons using Font Awesome -->
+                        <h3 style="color: rgb(8, 113, 113); font-size:22px; text-align:center"> <b>Text Summarizer </b>
+                        </h3>
+                        <!-- <p style="margin-left: 30px;"> Short</p>
+                        <input type="range" min="0" max="100" value="50" id="line-length-slider">
+                        <p>Long</p> -->
+                        <div id="but">
+
+                            <a href='{% url "texttospeech" %}'><i class="fas fa-microphone larger-icon"
+                                    id="microphonebutton"></i></a>
+                            <a href="{% url 'translate_summary' %}"><i class="fas fa-language larger-icon"
+                                    id="translatebutton"></i></a>
+
+                            <button id="deletebutton" title="Delete" onclick="deleteOutput()"><i
+                                    class="fas fa-trash-alt larger-icon"></i></button>
+                        </div>
+                        <!-- Slider with 2 mid points -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="main">
+            <form id='summarizeForm' action="{% url 'output' %}" method="post">
+                {% csrf_token %}
+                <label for="maxL">Length:</label>
+                <input type="string" name="maxL" value="30">
+                <div class="left"
+                    style="background-image: linear-gradient(to right, rgba(21, 187, 173, 0.638), rgba(21, 187, 173, 0.638));">
+                    <textarea ondragstart="return false;" id="inputText" name='data' type="text" rows="4"
+                        cols="30">{{ input }}</textarea>
+                    <button id="button" onclick="processText()">Summarize</button>
+                </div>
+            </form>
+
+            <div class="right">
+                {% if result %}
+                <p id="output" name="output">{{ result }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+
+    </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+    <script>
+        document.getElementById('summarizeForm').addEventListener('submit', function () {
+            var textareaValue = document.getElementById('inputText').value;
+            var maxLValue = document.getElementById('maxL').value;
+
+            sessionStorage.setItem('storedData', textareaValue);
+            sessionStorage.setItem('storedMaxL', maxLValue);
+        });
+        function closeNavbar() {
+            // Close the navbar when an item is clicked
+            $('.navbar-toggle').click();
+        }
+        // Your JavaScript code for microphone, translation, and profile buttons
+        document.getElementById('microphoneButton').addEventListener('click', function () {
+            // Add your microphone functionality here
+            alert('Microphone button clicked!');
+        });
+
+        document.getElementById('translateButton').addEventListener('click', function () {
+            // Add your translation functionality here
+            alert('Translate button clicked!');
+        });
+
+        document.getElementById('profileButton').addEventListener('click', function () {
+            // Add your profile functionality here
+            alert('Profile button clicked!');
+        });
+
+        function resizeTextbox() {
+            const textarea = document.getElementById('userInput');
+            text.style.height = 'auto';
+            text.style.height = (textarea.scrollHeight + 2) + 'px';
+
+        }
+        function toggleDropdown() {
+            var dropdown = document.getElementById("profileDropdown");
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('#profileButton button')) {
+                var dropdown = document.getElementById("profileDropdown");
+                if (dropdown.style.display === "block") {
+                    dropdown.style.display = "none";
+                }
+            }
+        }
+
+        function processText() {
+            var inputText = document.getElementById('inputText').value;
+            var outputDiv = document.getElementById('output');
+            //var deleteButton = document.getElementById('deletebutton');
+
+            // Process the input text (You can replace this with your summarization logic)
+            //var summarizedText = "Summarized: " + inputText;
+
+            // Display the summarized text
+            //outputDiv.innerText = summarizedText;
+
+            // Show the delete button
+            deleteButton.style.display = 'block';
+        }
+
+        function deleteOutput() {
+            var outputDiv = document.getElementById('output');
+            outputDiv.innerText = '';
+
+            // Hide the delete button after deleting the content
+            var deleteButton = document.getElementById('deletebutton');
+
+        }
+
+    </script>
+</body>
+
+</html>

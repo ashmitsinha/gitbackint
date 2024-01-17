@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event History</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #container {
+      display: flex;
+      max-width: 800px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    #leftColumn {
+      flex: 1;
+      padding: 20px;
+    }
+
+    #rightColumn {
+      flex: 1;
+      padding: 20px;
+      border-left: 1px solid #ddd;
+    }
+
+    #eventInput {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    #eventList {
+      list-style: none;
+      padding: 0;
+    }
+
+    .eventItem {
+      border-bottom: 1px solid #ddd;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deleteButton {
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <div id="leftColumn">
+      <h2>Input Event</h2>
+      <input type="text" id="eventInput" placeholder="Enter an event...">
+      <button onclick="addEvent()">Add Event</button>
+    </div>
+
+    <div id="rightColumn">
+      <h2>Event History</h2>
+      <ul id="eventList"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Load events from local storage
+    const events = JSON.parse(localStorage.getItem('events')) || [];
+
+    // Display existing events
+    const eventList = document.getElementById('eventList');
+    displayEvents();
+
+    function addEvent() {
+      const eventInput = document.getElementById('eventInput');
+      const eventText = eventInput.value.trim();
+
+      if (eventText !== '') {
+        events.push(eventText);
+        localStorage.setItem('events', JSON.stringify(events));
+        eventInput.value = '';
+        displayEvents();
+      }
+    }
+
+    function deleteEvent(index) {
+      events.splice(index, 1);
+      localStorage.setItem('events', JSON.stringify(events));
+      displayEvents();
+    }
+
+    function displayEvents() {
+      eventList.innerHTML = '';
+
+      for (let i = 0; i < events.length; i++) {
+        const listItem = document.createElement('li');
+        listItem.className = 'eventItem';
+        listItem.innerHTML = `
+          <span>${events[i]}</span>
+          <button class="deleteButton" onclick="deleteEvent(${i})">Delete</button>
+        `;
+        eventList.appendChild(listItem);
+      }
+    }
+  </script>
+
+</body>
+</html>
